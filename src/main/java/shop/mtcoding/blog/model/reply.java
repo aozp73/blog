@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class reply {
+public class Reply {
 
 }

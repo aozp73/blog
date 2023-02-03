@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class user {
+public class User {
     private int id;
-    private int username;
+    private String username;
     private String password;
     private String email;
     private Timestamp createdAt;
