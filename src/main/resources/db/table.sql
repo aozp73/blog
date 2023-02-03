@@ -8,9 +8,9 @@ create table user_tb(
 
 create table board_tb(
     id int auto_increment primary key,
-    user_id int,
-    title varchar,
-    content varchar,
+    user_id int not null,
+    title varchar not null,
+    content longtext not null,
     created_at timestamp
 );
 

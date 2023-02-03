@@ -4,14 +4,63 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
+import shop.mtcoding.blog.dto.user.UserReq.JoinReqDto;
+import shop.mtcoding.blog.handler.ex.CustomException;
+import shop.mtcoding.blog.service.UserService;
+import shop.mtcoding.blog.util.Script;
 
 @RequiredArgsConstructor
 @Controller
 public class UserController {
 
     private final HttpSession session;
+    private final UserService userService;
+
+    @PostMapping("/join")
+    @ResponseBody
+    public String join(JoinReqDto joinReqDto) {
+        // System.out.println(joinReqDto.getUsername());
+        // System.out.println(joinReqDto.getPassword());
+        // System.out.println(joinReqDto.getPassword());
+
+        // 이렇게 까지 하고 이것 관련 문제가 터지면 DB문제라고 단정 가능
+        // DB쪽 쿼리만 볼 수 있음
+        if (joinReqDto.getUsername() == null || joinReqDto.getUsername().isEmpty()) {
+            throw new CustomException("username을 작성해주세요");
+        }
+
+        if (joinReqDto.getPassword() == null || joinReqDto.getPassword().isEmpty()) {
+            throw new CustomException("password를 작성해주세요");
+        }
+
+        if (joinReqDto.getEmail() == null || joinReqDto.getEmail().isEmpty()) {
+            throw new CustomException("email을 작성해주세요");
+        }
+
+        int res = userService.회원가입(joinReqDto);
+        // return "redirect:/loginForm";
+        if (res != -1) {
+            // new CustomException("회원가입 실패");
+            return Script.back("회원정보를 다시 확인 해주세요.");
+        }
+        return Script.href("회원가입 완료", "/loginForm");
+
+    }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public String login(String username, String password) {
+        int res = userService.로그인(username, password);
+        if (res != 1) {
+            return Script.back("아이디와 비밀번호를 다시 확인해주세요");
+        }
+
+        return Script.href("/");
+    }
 
     @GetMapping("/joinForm")
     public String joinForm() {
