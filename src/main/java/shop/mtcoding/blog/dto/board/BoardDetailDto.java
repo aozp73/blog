@@ -7,7 +7,9 @@ import lombok.Setter;
 @Setter
 public class BoardDetailDto {
     private int id;
+    private int userId;
     private String username;
     private String title;
     private String content;
+
 }

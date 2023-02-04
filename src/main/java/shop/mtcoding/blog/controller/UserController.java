@@ -21,11 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    @ResponseBody
     public String join(JoinReqDto joinReqDto) {
-        // System.out.println(joinReqDto.getUsername());
-        // System.out.println(joinReqDto.getPassword());
-        // System.out.println(joinReqDto.getPassword());
 
         // 이렇게 까지 하고 이것 관련 문제가 터지면 DB문제라고 단정 가능
         // DB쪽 쿼리만 볼 수 있음
@@ -37,18 +33,25 @@ public class UserController {
             throw new CustomException("password를 작성해주세요");
         }
 
+        if (joinReqDto.getPasswordCheck() == null || joinReqDto.getPasswordCheck().isEmpty()) {
+            throw new CustomException("passwordCheck를 작성해주세요");
+        }
+
+        if (!(joinReqDto.getPassword().equals(joinReqDto.getPasswordCheck()))) {
+            throw new CustomException("비밀번호가 일치하지 않습니다");
+        }
+
         if (joinReqDto.getEmail() == null || joinReqDto.getEmail().isEmpty()) {
             throw new CustomException("email을 작성해주세요");
         }
 
         int res = userService.회원가입(joinReqDto);
         // return "redirect:/loginForm";
-        if (res != -1) {
-            // new CustomException("회원가입 실패");
-            return Script.back("회원정보를 다시 확인 해주세요.");
+        if (res != 1) {
+            throw new CustomException("회원가입 실패");
+            // return Script.back("회원정보를 다시 확인 해주세요.");
         }
-        return Script.href("회원가입 완료", "/loginForm");
-
+        return "redirect:/loginForm";
     }
 
     @PostMapping("/login")

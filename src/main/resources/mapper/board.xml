@@ -17,7 +17,7 @@
     </select>
 
     <select id="findByIdForUsername" resultType="shop.mtcoding.blog.dto.board.BoardDetailDto">
-      SELECT b.id, b.title, b.content, u.username
+      SELECT b.id, b.title, b.content, u.username, u.id as user_id
       FROM (select * from BOARD_TB where id = #{id}) b
       inner join user_tb u
       on b.user_id = u.id;

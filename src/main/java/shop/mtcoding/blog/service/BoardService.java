@@ -35,4 +35,14 @@ public class BoardService {
         BoardDetailDto board = boardRepository.findByIdForUsername(id);
         return board;
     }
+
+    public int 게시글수정하기(BoardDetailDto modifiedBoard) {
+        int res = boardRepository.updateById(modifiedBoard.getId(), modifiedBoard.getTitle(),
+                modifiedBoard.getContent());
+        if (res != 1) {
+            return -1;
+        }
+        return 1;
+
+    }
 }

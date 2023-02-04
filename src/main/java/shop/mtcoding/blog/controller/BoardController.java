@@ -2,6 +2,7 @@ package shop.mtcoding.blog.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -9,15 +10,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardDto;
+import shop.mtcoding.blog.dto.board.ResponseDto;
+import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
-import shop.mtcoding.blog.util.Script;
 
 @RequiredArgsConstructor
 @Controller
@@ -36,30 +43,61 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, Model model) {
         BoardDetailDto board = boardService.게시글상세보기(id);
+        System.out.println("디버깅" + id);
         model.addAttribute("board", board);
         return "board/detail";
     }
 
     @PostMapping("/board/insert")
-    @ResponseBody
     public String insert(BoardDto boardDto) {
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            return Script.href("로그인이 필요합니다", "/loginForm");
+            throw new CustomException("로그인이 필요합니다");
         }
 
         int res = boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
         if (res != 1) {
-            return Script.back("게시글 등록 실패");
+            throw new CustomException("게시글 등록 실패");
         }
-        return Script.href("게시글이 등록되었습니다", "/");
+        return "redirect:/";
+    }
+
+    // 작업 중
+    // @PostMapping("/board/{id}/{userId}/update")
+    @RequestMapping(value = "board/{id}/{userId}/update", method = { RequestMethod.PUT })
+    @ResponseBody
+    public String update(@PathVariable int id, @PathVariable int userId, @RequestBody BoardDetailDto boardPut,
+            HttpServletResponse rs) {
+
+        Gson gson = new Gson();
+
+        // 1. 인증
+        User user = (User) session.getAttribute("principal");
+        if (user == null) {
+            return gson.toJson(new ResponseDto<>(-1, "로그인 필요", true));
+        }
+
+        // 2. 권한체크
+        if (((User) session.getAttribute("principal")).getId() != userId) {
+            return gson.toJson(new ResponseDto<>(-1, "권한 필요", true));
+        }
+
+        // 게시글 수정(Service)
+        int res = boardService.게시글수정하기(boardPut);
+        if (res != 1) {
+            return gson.toJson(new ResponseDto<>(-1, "게시글 update 실패", true));
+
+        }
+
+        return gson.toJson(new ResponseDto<>(1, "게시글 update 성공", true));
+
     }
 
     @GetMapping("/board/saveForm")
     public String saveForm() {
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            return "error/notfound";
+            throw new CustomException("로그인이 필요합니다");
         }
 
         return "board/saveForm";
@@ -70,15 +108,16 @@ public class BoardController {
         // 1. 인증
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            return Script.href("로그인이 필요합니다", "/loginForm");
+            throw new CustomException("로그인이 필요합니다");
         }
 
         // 2. 권한
         if (user.getId() != id) {
-            return Script.href("권한이 없습니다", "/");
+            throw new CustomException("권한이 없습니다");
         }
 
         BoardDetailDto board = boardService.게시글상세보기(id);
+
         model.addAttribute("board", board);
         return "board/updateForm";
     }
