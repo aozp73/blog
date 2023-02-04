@@ -2,7 +2,6 @@ package shop.mtcoding.blog.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -23,28 +22,38 @@ import shop.mtcoding.blog.dto.board.BoardDto;
 import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
+import shop.mtcoding.blog.model.Reply;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
+import shop.mtcoding.blog.service.ReplyService;
 
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
-
+    Gson gson;
     private final BoardService boardService;
+    private final ReplyService replyService;
     private final HttpSession session;
 
-    // main(전체 게시물) 이동
+    // main
     @GetMapping({ "/", "/board" })
     public String main(Model model) {
         List<Board> boardList = boardService.게시글불러오기();
         model.addAttribute("boardList", boardList);
+
         return "board/main";
     }
 
+    // main -> detail
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, Model model) {
+        // board data
         BoardDetailDto board = boardService.게시글상세보기(id);
         model.addAttribute("board", board);
+
+        // reply data
+        List<Reply> replyList = replyService.댓글목록불러오기();
+        model.addAttribute("replyList", replyList);
         return "board/detail";
     }
 
@@ -93,8 +102,6 @@ public class BoardController {
     @RequestMapping(value = "board/{id}/{userId}/update", method = { RequestMethod.PUT })
     @ResponseBody
     public String update(@PathVariable int id, @PathVariable int userId, @RequestBody BoardDetailDto boardPut) {
-
-        Gson gson = new Gson();
 
         // 1. 인증
         User user = (User) session.getAttribute("principal");
