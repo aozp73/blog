@@ -2,18 +2,22 @@ package shop.mtcoding.blog.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
+import shop.mtcoding.blog.model.User;
 
 @RequiredArgsConstructor
 @Service
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final HttpSession session;
 
     public int 게시글등록(int userId, String title, String content) {
         // board_tb 반영
@@ -42,6 +46,28 @@ public class BoardService {
         if (res != 1) {
             return -1;
         }
+        return 1;
+    }
+
+    public int 게시글삭제하기(int id) {
+        // 게시글 존재여부 확인
+        Board board = boardRepository.findById(id);
+        if (board == null) {
+            return -1;
+        }
+
+        // 본인이 쓴 board인지 확인
+        User user = (User) session.getAttribute("principal");
+        if (user.getId() != board.getUserId()) {
+            return -1;
+        }
+
+        // 게시글 삭제
+        int res = boardRepository.deleteById(id);
+        if (res != 1) {
+            return 1;
+        }
+
         return 1;
 
     }

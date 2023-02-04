@@ -33,6 +33,7 @@ public class BoardController {
     private final BoardService boardService;
     private final HttpSession session;
 
+    // main(전체 게시물) 이동
     @GetMapping({ "/", "/board" })
     public String main(Model model) {
         List<Board> boardList = boardService.게시글불러오기();
@@ -43,7 +44,6 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, Model model) {
         BoardDetailDto board = boardService.게시글상세보기(id);
-        System.out.println("디버깅" + id);
         model.addAttribute("board", board);
         return "board/detail";
     }
@@ -62,30 +62,55 @@ public class BoardController {
         return "redirect:/";
     }
 
-    // 작업 중
-    // @PostMapping("/board/{id}/{userId}/update")
+    @RequestMapping(value = "board/{id}/{userId}/delete", method = { RequestMethod.DELETE })
+    @ResponseBody
+    public String delete(@PathVariable int id, @PathVariable int userId) {
+        /*
+         * !! 추가작업 필요 : DB log기록
+         */
+        Gson gson = new Gson();
+
+        // 1. 인증
+        User user = (User) session.getAttribute("principal");
+        if (user == null) {
+            return gson.toJson(new ResponseDto<>(-1, "로그인이 필요합니다", false));
+        }
+
+        // 2. 권한체크
+        if (((User) session.getAttribute("principal")).getId() != userId) {
+            return gson.toJson(new ResponseDto<>(-1, "권한이 없습니다", false));
+        }
+
+        // 3. 게시글 삭제 - Service
+        int res = boardService.게시글삭제하기(id);
+        if (res != 1) {
+            return gson.toJson(new ResponseDto<>(-1, "DB 에러", false));
+        }
+
+        return gson.toJson(new ResponseDto<>(1, "게시글 삭제 성공", true));
+    }
+
     @RequestMapping(value = "board/{id}/{userId}/update", method = { RequestMethod.PUT })
     @ResponseBody
-    public String update(@PathVariable int id, @PathVariable int userId, @RequestBody BoardDetailDto boardPut,
-            HttpServletResponse rs) {
+    public String update(@PathVariable int id, @PathVariable int userId, @RequestBody BoardDetailDto boardPut) {
 
         Gson gson = new Gson();
 
         // 1. 인증
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            return gson.toJson(new ResponseDto<>(-1, "로그인 필요", true));
+            return gson.toJson(new ResponseDto<>(-1, "로그인 필요", false));
         }
 
         // 2. 권한체크
         if (((User) session.getAttribute("principal")).getId() != userId) {
-            return gson.toJson(new ResponseDto<>(-1, "권한 필요", true));
+            return gson.toJson(new ResponseDto<>(-1, "권한 필요", false));
         }
 
-        // 게시글 수정(Service)
+        // 3. 게시글 수정 - Service
         int res = boardService.게시글수정하기(boardPut);
         if (res != 1) {
-            return gson.toJson(new ResponseDto<>(-1, "게시글 update 실패", true));
+            return gson.toJson(new ResponseDto<>(-1, "게시글 update 실패", false));
 
         }
 

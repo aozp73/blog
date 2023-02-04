@@ -51,8 +51,8 @@
                         console.log(res.msg);
                         location.href=`/board/${board.id}`;
                     }).fail((err) => {
-                        console.log(res.code);
-                        console.log(res.msg);
+                        console.log(err.code);
+                        console.log(err.msg);
                         location.href=`/board/${board.id}`;
                     });
 
