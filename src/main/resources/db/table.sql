@@ -15,7 +15,13 @@ create table board_tb(
 );
 
 create table love_tb(
-
+    id int auto_increment primary key,
+    board_id int not null,
+    board_user_id int not null,
+    acted_user_id int not null,
+    is_check boolean,
+    count int,
+    created_at timestamp
 );
 
 create table reply_tb(

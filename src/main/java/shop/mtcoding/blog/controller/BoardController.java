@@ -25,6 +25,7 @@ import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.Reply;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
+import shop.mtcoding.blog.service.LoveService;
 import shop.mtcoding.blog.service.ReplyService;
 
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ import shop.mtcoding.blog.service.ReplyService;
 public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
+    private final LoveService loveService;
     private final HttpSession session;
 
     // main
@@ -53,6 +55,9 @@ public class BoardController {
         // reply data
         List<Reply> replyList = replyService.댓글목록불러오기();
         model.addAttribute("replyList", replyList);
+
+        // love data
+
         return "board/detail";
     }
 
@@ -63,10 +68,16 @@ public class BoardController {
             throw new CustomException("로그인이 필요합니다");
         }
 
-        int res = boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
-        if (res != 1) {
-            throw new CustomException("게시글 등록 실패");
+        int res1 = boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
+        if (res1 != 1) {
+            throw new CustomException("게시글 등록 실패(error-1)");
         }
+
+        int res2 = loveService.좋아요테이블생성();
+        if (res2 != 1) {
+            throw new CustomException("게시글 등록 실패(error-2)");
+        }
+
         return "redirect:/";
     }
 
@@ -142,8 +153,8 @@ public class BoardController {
         return "board/saveForm";
     }
 
-    @GetMapping("/board/{id}/updateForm")
-    public String updateForm(@PathVariable int id, Model model) {
+    @GetMapping("/board/{id}/{boardUserId}/updateForm")
+    public String updateForm(@PathVariable int id, @PathVariable int boardUserId, Model model) {
         // 1. 인증
         User user = (User) session.getAttribute("principal");
         if (user == null) {
@@ -151,7 +162,7 @@ public class BoardController {
         }
 
         // 2. 권한
-        if (user.getId() != id) {
+        if (user.getId() != boardUserId) {
             throw new CustomException("수정 권한이 없습니다");
         }
 

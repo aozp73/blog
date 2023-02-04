@@ -4,7 +4,7 @@
 
             <div class="container my-3">
                 <div class="mb-3">
-                    <a href="/board/${board.id}/updateForm" class="btn btn-warning">수정</a>
+                    <a href="/board/${board.id}/${board.userId}/updateForm" class="btn btn-warning">수정</a>
                     <button id="btn-delete" class="btn btn-danger" onclick="postDelete()">삭제</button>
                 </div>
 
@@ -59,6 +59,39 @@
             </div>
 
             <script>
+
+                // 코드 진행 중
+                $("#heart").click(() => {
+                    if (!!`${principal}`) {
+                        let heart = $("#heart").val();
+
+                        // 통신
+                        $.ajax({
+                            type: "post",
+                            url: `/love/${board.id}/insert`,
+                            data : heart;
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8"
+                            },                            
+                            dataType: "json"
+                        }).done((res) => {
+
+                        }).fail((err) => {
+
+                        });
+
+                        let value = $("#heart").val();
+                        if (value == "ok") {
+                            $("#heart").removeClass("fa-solid");
+                            $("#heart").val("no");
+                        } else {
+                            $("#heart").addClass("fa-solid");
+                            $("#heart").val("ok");
+                        }
+
+                    }
+                });
+
 
 
                 function replyDelete(replyId, replyUserId) {

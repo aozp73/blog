@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
+import shop.mtcoding.blog.dto.board.BoardRecentDto;
 
 @Mapper
 public interface BoardRepository {
@@ -13,6 +14,8 @@ public interface BoardRepository {
                         @Param("content") String content);
 
         public List<Board> findByAll();
+
+        public BoardRecentDto findRecentInsert();
 
         public Board findById(int id);
 

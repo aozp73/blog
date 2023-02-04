@@ -3,6 +3,32 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="shop.mtcoding.test1.model.LoveRepository">
+<mapper namespace="shop.mtcoding.blog.model.LoveRepository">
+    <insert id="insert">
+      insert into love_tb(board_id, board_user_id, acted_user_id, is_check, count, created_at)
+                   values(#{boardId},#{boardUserId},#{actedUserId},#{isCheck},#{count},now())
+    </insert>
 
+    <select id="findByAll" resultType="shop.mtcoding.blog.model.Love">
+      select * from love_tb
+    </select>
+
+    <select id="findByBoardIdAndActedUserId" resultType="shop.mtcoding.blog.model.Love">
+      select * from love_tb where board_id = #{boardId} and acted_user_id = #{actedUserId}
+    </select>
+
+    <select id="findById" resultType="shop.mtcoding.blog.model.Love">
+      select * from love_tb where id = #{id}
+    </select>
+
+    <update id="updateById">
+      update love_tb
+         set is_check = #{isCheck},
+                count = #{count}
+       where id = #{id}
+    </update>
+
+    <delete id="deleteById">
+      delete from love_tb where id = #{id}
+    </delete>
 </mapper>
