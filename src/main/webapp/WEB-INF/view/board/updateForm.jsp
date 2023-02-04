@@ -47,12 +47,10 @@
                         },
                         dataType: "json"
                     }).done((res) => {
-                        console.log(res.code);
-                        console.log(res.msg);
+                        console.log(res);
                         location.href=`/board/${board.id}`;
                     }).fail((err) => {
-                        console.log(err.code);
-                        console.log(err.msg);
+                        console.log(err);
                         location.href=`/board/${board.id}`;
                     });
 

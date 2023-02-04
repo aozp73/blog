@@ -36,6 +36,7 @@ public class BoardService {
     }
 
     public BoardDetailDto 게시글상세보기(int id) {
+        // 작성한 username 저장
         BoardDetailDto board = boardRepository.findByIdForUsername(id);
         return board;
     }
@@ -53,7 +54,7 @@ public class BoardService {
         // 게시글 존재여부 확인
         Board board = boardRepository.findById(id);
         if (board == null) {
-            return -1;
+            return -3;
         }
 
         // 본인이 쓴 board인지 확인
@@ -65,7 +66,7 @@ public class BoardService {
         // 게시글 삭제
         int res = boardRepository.deleteById(id);
         if (res != 1) {
-            return 1;
+            return -1;
         }
 
         return 1;

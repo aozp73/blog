@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.Reply;
 import shop.mtcoding.blog.model.ReplyRepository;
-import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.model.UserRepository;
 
 @RequiredArgsConstructor
@@ -18,6 +17,28 @@ public class ReplyService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
+
+    public int 댓글삭제하기(int boardId, int replyId, int boardUserId) {
+        // 댓글 존재 확인
+        Reply reply = replyRepository.findById(replyId);
+        if (reply == null) {
+            return -1;
+        }
+
+        // 본인이 쓴 reply인지 확인
+        if (boardUserId != reply.getUserId()) {
+            return -1;
+        }
+
+        // 댓글 삭제
+        int res = replyRepository.deleteById(replyId);
+        if (res != 1) {
+            return -2;
+        }
+
+        return 1;
+
+    }
 
     public int 댓글쓰기(Reply reply) {
         // boardId, userId 유효성 검사

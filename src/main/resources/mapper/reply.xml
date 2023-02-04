@@ -10,7 +10,7 @@
     </insert>
 
     <select id="findByAll" resultType="shop.mtcoding.blog.model.Reply">
-      select * from reply_tb
+      select * from reply_tb order by id desc
     </select>
 
     <select id="findById" resultType="shop.mtcoding.blog.model.Reply">

@@ -30,7 +30,6 @@ import shop.mtcoding.blog.service.ReplyService;
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
-    Gson gson;
     private final BoardService boardService;
     private final ReplyService replyService;
     private final HttpSession session;
@@ -47,7 +46,7 @@ public class BoardController {
     // main -> detail
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, Model model) {
-        // board data
+        // board data (게시글 작성 username 저장)
         BoardDetailDto board = boardService.게시글상세보기(id);
         model.addAttribute("board", board);
 
@@ -82,18 +81,21 @@ public class BoardController {
         // 1. 인증
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            return gson.toJson(new ResponseDto<>(-1, "로그인이 필요합니다", false));
+            return gson.toJson(new ResponseDto<>(-1, "로그인 필요", false));
         }
 
         // 2. 권한체크
-        if (((User) session.getAttribute("principal")).getId() != userId) {
-            return gson.toJson(new ResponseDto<>(-1, "권한이 없습니다", false));
+        if (user.getId() != userId) {
+            return gson.toJson(new ResponseDto<>(-1, "권한 필요", false));
         }
 
         // 3. 게시글 삭제 - Service
         int res = boardService.게시글삭제하기(id);
+        if (res == -2) {
+            return gson.toJson(new ResponseDto<>(-2, "권한 필요", false));
+        }
         if (res != 1) {
-            return gson.toJson(new ResponseDto<>(-1, "DB 에러", false));
+            return gson.toJson(new ResponseDto<>(-2, "DB에러", false));
         }
 
         return gson.toJson(new ResponseDto<>(1, "게시글 삭제 성공", true));
@@ -102,7 +104,7 @@ public class BoardController {
     @RequestMapping(value = "board/{id}/{userId}/update", method = { RequestMethod.PUT })
     @ResponseBody
     public String update(@PathVariable int id, @PathVariable int userId, @RequestBody BoardDetailDto boardPut) {
-
+        Gson gson = new Gson();
         // 1. 인증
         User user = (User) session.getAttribute("principal");
         if (user == null) {
@@ -116,9 +118,14 @@ public class BoardController {
 
         // 3. 게시글 수정 - Service
         int res = boardService.게시글수정하기(boardPut);
+        if (res != -3) {
+            return gson.toJson(new ResponseDto<>(-2, "게시글 존재하지 않음", false));
+        }
+        if (res != -2) {
+            return gson.toJson(new ResponseDto<>(-2, "권한 필요", false));
+        }
         if (res != 1) {
-            return gson.toJson(new ResponseDto<>(-1, "게시글 update 실패", false));
-
+            return gson.toJson(new ResponseDto<>(-2, "DB 에러", false));
         }
 
         return gson.toJson(new ResponseDto<>(1, "게시글 update 성공", true));
@@ -145,7 +152,7 @@ public class BoardController {
 
         // 2. 권한
         if (user.getId() != id) {
-            throw new CustomException("권한이 없습니다");
+            throw new CustomException("수정 권한이 없습니다");
         }
 
         BoardDetailDto board = boardService.게시글상세보기(id);

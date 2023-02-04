@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Reply {
+    private int id;
     private int boardId;
     private int userId;
     private String username;
