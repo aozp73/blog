@@ -18,7 +18,7 @@ public class ReplyService {
     private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
 
-    public int 댓글삭제하기(int boardId, int replyId, int boardUserId) {
+    public int 댓글삭제하기(int boardId, int replyId, int boardUserId, int replyUserId) {
         // 댓글 존재 확인
         Reply reply = replyRepository.findById(replyId);
         if (reply == null) {
@@ -26,7 +26,7 @@ public class ReplyService {
         }
 
         // 본인이 쓴 reply인지 확인
-        if (boardUserId != reply.getUserId()) {
+        if (replyUserId != reply.getUserId()) {
             return -1;
         }
 

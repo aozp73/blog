@@ -25,9 +25,11 @@ public class ReplyController {
 
     private final ReplyService replyService;
 
-    @RequestMapping(value = "reply/{boardId}/{replyId}/{boardUserId}/delete", method = { RequestMethod.DELETE })
+    @RequestMapping(value = "reply/{boardId}/{replyId}/{boardUserId}/{replyUserId}/delete", method = {
+            RequestMethod.DELETE })
     @ResponseBody
-    public String delete(@PathVariable int boardId, @PathVariable int replyId, @PathVariable int boardUserId) {
+    public String delete(@PathVariable int boardId, @PathVariable int replyId, @PathVariable int boardUserId,
+            @PathVariable int replyUserId) {
         /*
          * !! 추가작업 필요 : DB log기록
          */
@@ -38,17 +40,17 @@ public class ReplyController {
         if (user == null) {
             return gson.toJson(new ResponseDto<>(-1, "로그인 필요", false));
         }
-
         // 2. 권한체크
-        if (((User) session.getAttribute("principal")).getId() != boardUserId) {
+        if (((User) session.getAttribute("principal")).getId() != replyUserId) {
             return gson.toJson(new ResponseDto<>(-1, "권한 필요", false));
         }
 
         // 3. 댓글 삭제 - Service
-        int res = replyService.댓글삭제하기(boardId, replyId, boardUserId);
+        int res = replyService.댓글삭제하기(boardId, replyId, boardUserId, replyUserId);
         if (res == -2) {
             return gson.toJson(new ResponseDto<>(-2, "DB오류", false));
         }
+
         if (res == -1) {
             return gson.toJson(new ResponseDto<>(-2, "권한 필요", false));
         }
