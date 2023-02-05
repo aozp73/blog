@@ -5,8 +5,8 @@
 
 <mapper namespace="shop.mtcoding.blog.model.LoveRepository">
     <insert id="insert">
-      insert into love_tb(board_id, board_user_id, acted_user_id, is_check, count, created_at)
-                   values(#{boardId},#{boardUserId},#{actedUserId},#{isCheck},#{count},now())
+      insert into love_tb(board_id, board_user_id, acted_user_id, is_check, created_at)
+                   values(#{boardId},#{boardUserId},#{actedUserId},#{isCheck},now())
     </insert>
 
     <select id="findByAll" resultType="shop.mtcoding.blog.model.Love">
@@ -23,8 +23,7 @@
 
     <update id="updateById">
       update love_tb
-         set is_check = #{isCheck},
-                count = #{count}
+         set is_check = #{isCheck}
        where id = #{id}
     </update>
 

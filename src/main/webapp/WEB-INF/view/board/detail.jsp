@@ -10,9 +10,31 @@
 
                 <div class="mb-2">
                     글 번호 : <span id="id"><i>${board.id} </i></span> 작성자 : <span><i>${board.username} </i></span>
-                    <div id="heart" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
+
+                    <c:choose>
+                        <c:when test="${love.isCheck == null}">
+                            <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
+                            <input id="heart" type="hidden" value="no">
+                        </c:when>
+                        <c:otherwise>
+                            <c:choose>
+                                <c:when test="${love.isCheck}">
+                                    <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="ok"></div>
+                                    <input id="heart" type="hidden" value="ok">
+                                </c:when>
+                                <c:otherwise>
+                                    <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
+                                    <input id="heart" type="hidden" value="no">
+                                </c:otherwise>
+                            </c:choose>
+
+                        </c:otherwise>
+                    </c:choose>
+
+
                 </div>
 
+                <div id="tes" value="a"></div>
                 <div>
                     <h3>${board.title}</h3>
                 </div>
@@ -60,32 +82,39 @@
 
             <script>
 
-                // 코드 진행 중
-                $("#heart").click(() => {
-                    if (!!`${principal}`) {
-                        let heart = $("#heart").val();
+                function printLove() {
+                    let value = $("#heart").val();
+                    if ($("#heart").val() == "ok") {
+                        $("#heartPicture").addClass("fa-solid");
+                    }
+                }
 
+                $("#heartPicture").click(() => {
+                    if (`${principal}`) {
+                        let heart = $("#heart").val();
                         // 통신
                         $.ajax({
                             type: "post",
                             url: `/love/${board.id}/insert`,
-                            data : heart;
+                            data: heart,
                             headers: {
                                 "Content-Type": "application/json; charset=utf-8"
-                            },                            
+                            },
                             dataType: "json"
                         }).done((res) => {
-
+                            console.log(res.code)
+                            console.log(res.isCheck)
                         }).fail((err) => {
-
+                            console.log(err.code)
+                            console.log(err.isCheck)
                         });
 
                         let value = $("#heart").val();
                         if (value == "ok") {
-                            $("#heart").removeClass("fa-solid");
+                            $("#heartPicture").removeClass("fa-solid");
                             $("#heart").val("no");
                         } else {
-                            $("#heart").addClass("fa-solid");
+                            $("#heartPicture").addClass("fa-solid");
                             $("#heart").val("ok");
                         }
 
@@ -203,7 +232,7 @@
                 }/* 댓글 Post */
 
 
-
+                printLove()
             </script>
 
             <%@ include file="../layout/footer.jsp" %>

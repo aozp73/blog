@@ -1,11 +1,10 @@
 package shop.mtcoding.blog.service;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import shop.mtcoding.blog.dto.board.BoardRecentDto;
+import shop.mtcoding.blog.dto.love.LoveDto;
+import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.Love;
 import shop.mtcoding.blog.model.LoveRepository;
@@ -17,21 +16,59 @@ public class LoveService {
     private final LoveRepository loverepository;
     private final BoardRepository boardrepository;
 
-    public int 좋아요테이블생성() {
-        BoardRecentDto board = boardrepository.findRecentInsert();
-        int res = loverepository.insert(board.getId(), board.getUserId(), 0, false, 0);
-        if (res != 1) {
-            return -1;
-        }
-        return 1;
-    }
-
-    public int 좋아요상태체크(int boardId, int principalId) {
+    public LoveDto 게시물좋아요상태체크(int boardId, int principalId) {
         Love love = loverepository.findByBoardIdAndActedUserId(boardId, principalId);
         if (love == null) {
-            return -1;
+            return new LoveDto(1, null);
+        }
+
+        if (love.getIsCheck() == true) {
+            return new LoveDto(1, true);
+        } else {
+            return new LoveDto(0, false);
+        }
+    }
+
+    public int 좋아요테이블체크(int boardId, int principalId) {
+        Love love = loverepository.findByBoardIdAndActedUserId(boardId, principalId);
+        Board board = boardrepository.findById(boardId);
+
+        // 최초 좋아요한 적이 없다면 테이블 생성
+        if (love == null) {
+            int res = loverepository.insert(boardId, board.getUserId(), principalId, false);
+            if (res != 1) {
+                return -1;
+            }
         }
 
         return 1;
     }
+
+    public LoveDto 좋아요isCheck세팅(int boardId, int principalId) {
+        Love love = loverepository.findByBoardIdAndActedUserId(boardId, principalId);
+        boolean isCheck = love.getIsCheck();
+
+        if (isCheck == false) {
+            // 기존 false면 true로 update
+            int res1 = loverepository.updateById(love.getId(), true);
+            if (res1 != 1) {
+                return new LoveDto(-1, false);
+            }
+            return new LoveDto(1, true);
+        } else {
+            // 기존 false면 ture로 update
+            int res2 = loverepository.updateById(love.getId(), false);
+            if (res2 != 1) {
+                return new LoveDto(-1, false);
+            }
+            return new LoveDto(1, false);
+        }
+
+    }
+
+    // public List<Love> 좋아요전체리스트() {
+    // List<Love> loveList = loverepository.findByAll();
+    // return loveList;
+    // }
+
 }

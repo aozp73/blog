@@ -11,6 +11,7 @@ create table board_tb(
     user_id int not null,
     title varchar not null,
     content longtext not null,
+    love_cnt int,
     created_at timestamp
 );
 
@@ -20,7 +21,6 @@ create table love_tb(
     board_user_id int not null,
     acted_user_id int not null,
     is_check boolean,
-    count int,
     created_at timestamp
 );
 

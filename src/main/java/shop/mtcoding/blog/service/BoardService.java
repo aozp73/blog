@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
+import shop.mtcoding.blog.dto.love.LoveDto;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.User;
@@ -19,11 +20,29 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final HttpSession session;
 
+    public int 좋아요반영(int boardId, LoveDto loveDto) {
+        Board board = boardRepository.findById(boardId);
+        Boolean isCheck = loveDto.getIsCheck();
+        if (isCheck == true) {
+            int res1 = boardRepository.updateCntById(boardId, board.getLoveCnt() + 1);
+            if (res1 != 1) {
+                return -1;
+            }
+
+        } else {
+            int res2 = boardRepository.updateCntById(boardId, board.getLoveCnt() - 1);
+            if (res2 != 1) {
+                return -1;
+            }
+        }
+        return 1;
+    }
+
     public int 게시글등록(int userId, String title, String content) {
         // board_tb 반영
         content = content.replaceAll("<p>", "");
         content = content.replaceAll("</p>", "");
-        int res = boardRepository.insert(userId, title, content);
+        int res = boardRepository.insert(userId, title, content, 0);
         if (res != 1) {
             return -1;
         }
@@ -68,8 +87,6 @@ public class BoardService {
         if (res != 1) {
             return -1;
         }
-
         return 1;
-
     }
 }

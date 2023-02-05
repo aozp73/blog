@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardDto;
 import shop.mtcoding.blog.dto.board.ResponseDto;
+import shop.mtcoding.blog.dto.love.LoveDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.Reply;
@@ -57,6 +58,13 @@ public class BoardController {
         model.addAttribute("replyList", replyList);
 
         // love data
+        User principal = new User();
+        if (session.getAttribute("principal") != null) {
+            principal = (User) session.getAttribute("principal");
+        }
+
+        LoveDto love = loveService.게시물좋아요상태체크(id, principal.getId());
+        model.addAttribute("love", love);
 
         return "board/detail";
     }
@@ -70,12 +78,7 @@ public class BoardController {
 
         int res1 = boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
         if (res1 != 1) {
-            throw new CustomException("게시글 등록 실패(error-1)");
-        }
-
-        int res2 = loveService.좋아요테이블생성();
-        if (res2 != 1) {
-            throw new CustomException("게시글 등록 실패(error-2)");
+            throw new CustomException("게시글 등록 실패");
         }
 
         return "redirect:/";

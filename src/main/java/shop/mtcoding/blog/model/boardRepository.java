@@ -11,7 +11,7 @@ import shop.mtcoding.blog.dto.board.BoardRecentDto;
 @Mapper
 public interface BoardRepository {
         public int insert(@Param("userId") int userId, @Param("title") String title,
-                        @Param("content") String content);
+                        @Param("content") String content, @Param("loveCnt") int loveCnt);
 
         public List<Board> findByAll();
 
@@ -23,6 +23,8 @@ public interface BoardRepository {
 
         public int updateById(@Param("id") int id, @Param("title") String title,
                         @Param("content") String content);
+
+        public int updateCntById(@Param("id") int id, @Param("loveCnt") int loveCnt);
 
         public int deleteById(int id);
 }
