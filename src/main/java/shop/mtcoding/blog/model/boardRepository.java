@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardRecentDto;
+import shop.mtcoding.blog.vo.BoardVO;
+import shop.mtcoding.blog.vo.Criteria;
 
 @Mapper
 public interface BoardRepository {
@@ -14,6 +16,12 @@ public interface BoardRepository {
                         @Param("content") String content, @Param("loveCnt") int loveCnt);
 
         public List<Board> findByAll();
+
+        public List<BoardVO> findListPaging(@Param("beginCheck") int beginCheck, @Param("endCheck") int endCheck);
+
+        public int getTotalCount();
+
+        public List<Board> findByAllOrederByLove();
 
         public BoardRecentDto findRecentInsert();
 

@@ -1,5 +1,6 @@
 package shop.mtcoding.blog.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -19,29 +20,60 @@ import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardDto;
+import shop.mtcoding.blog.dto.board.PageDto;
 import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.dto.love.LoveDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
+import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.Reply;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
 import shop.mtcoding.blog.service.LoveService;
 import shop.mtcoding.blog.service.ReplyService;
+import shop.mtcoding.blog.vo.BoardVO;
+import shop.mtcoding.blog.vo.Criteria;
 
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
     private final ReplyService replyService;
     private final LoveService loveService;
     private final HttpSession session;
 
+    @GetMapping("/board/paging")
+    public @ResponseBody String paging(int begin, int end, Model model) {
+        Gson gson = new Gson();
+        int cnt = boardService.페이징전체게시물갯수() / 12;
+        int calRemain = boardService.페이징전체게시물갯수() % 12;
+
+        if (begin == cnt * 12) {
+            end = begin + calRemain - 1;
+        }
+        List<Board> boardList = boardRepository.findByAllOrederByLove();
+        List<Board> newList = new ArrayList<>();
+
+        for (int i = begin; i <= end; i++) {
+            newList.add(boardList.get(i));
+        }
+
+        return gson.toJson(newList);
+    }
+
     // main
     @GetMapping({ "/", "/board" })
-    public String main(Model model) {
+    public String main(Criteria cri, Model model) {
         List<Board> boardList = boardService.게시글불러오기();
         model.addAttribute("boardList", boardList);
+
+        // List<BoardVO> board = boardService.getList(cri);
+        // for (BoardVO BoardVO : board) {
+        // System.out.println(BoardVO.getContent());
+        // }
+        // model.addAttribute("list", boardService.페이징게시물리스트(cri));
+        model.addAttribute("pageMaker", new PageDto(cri, boardService.페이징전체게시물갯수()));
 
         return "board/main";
     }

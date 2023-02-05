@@ -8,6 +8,30 @@
       insert into board_tb(user_id, title, content, love_cnt ,created_at) values(#{userId},#{title},#{content},#{loveCnt},now())
     </insert>
 
+    <select id="findListPaging" resultType="shop.mtcoding.blog.vo.BoardVO">
+      <![CDATA[
+          select *
+          from (
+              select 
+              rownum, user_id, title, content, love_cnt, created_at
+              from 
+              (select * from board_tb order by love_cnt desc)
+              where rownum <= #{#end_check}
+          )
+          where rownum > #{begin_check}
+          ]]>
+    </select>
+
+    <select id="getTotalCount" resultType="int">
+      <![CDATA[
+        select count(*) from board_tb where id > 0
+      ]]>
+    </select>
+
+    <select id="findByAllOrederByLove" resultType="shop.mtcoding.blog.model.Board">
+      select * from board_tb order by love_cnt desc
+    </select>  
+
     <select id="findByAll" resultType="shop.mtcoding.blog.model.Board">
       select * from board_tb
     </select>

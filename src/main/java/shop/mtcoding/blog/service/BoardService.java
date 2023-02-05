@@ -12,6 +12,8 @@ import shop.mtcoding.blog.dto.love.LoveDto;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.User;
+import shop.mtcoding.blog.vo.BoardVO;
+import shop.mtcoding.blog.vo.Criteria;
 
 @RequiredArgsConstructor
 @Service
@@ -49,8 +51,16 @@ public class BoardService {
         return 1;
     }
 
+    // public List<BoardVO> 페이징게시물리스트(Criteria cri) {
+    // return boardRepository.findListPaging(cri);
+    // }
+
+    public int 페이징전체게시물갯수() {
+        return boardRepository.getTotalCount();
+    }
+
     public List<Board> 게시글불러오기() {
-        List<Board> boardList = boardRepository.findByAll();
+        List<Board> boardList = boardRepository.findByAllOrederByLove();
         return boardList;
     }
 
