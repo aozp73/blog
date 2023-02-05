@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
+import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.dto.user.UserReq.JoinReqDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.service.UserService;
@@ -19,6 +20,22 @@ public class UserController {
 
     private final HttpSession session;
     private final UserService userService;
+
+    @GetMapping("/user/usernameSameCheck")
+    public @ResponseBody ResponseDto<?> usernameCheck(String username) {
+        if (username == null || username.isEmpty()) {
+            return new ResponseDto<>(-1, "username 공백", null);
+        }
+
+        // userService
+        int res = userService.유저네임중복체크(username);
+
+        if (res == -1) {
+            return new ResponseDto<>(-1, "동일한 아이디가 존재합니다", false);
+        }
+
+        return new ResponseDto<>(1, "해당 아이디로 회원가입 가능합니다", true);
+    }
 
     @PostMapping("/join")
     public String join(JoinReqDto joinReqDto) {

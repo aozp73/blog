@@ -1,10 +1,13 @@
 package shop.mtcoding.blog.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import shop.mtcoding.blog.dto.user.UserCheckRes;
 import shop.mtcoding.blog.dto.user.UserReq.JoinReqDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.User;
@@ -16,6 +19,17 @@ public class UserService {
 
     private final HttpSession session;
     private final UserRepository userRepository;
+
+    public int 유저네임중복체크(String username) {
+        List<UserCheckRes> usernameList = userRepository.findByAllUsername();
+        for (UserCheckRes userCheckRes : usernameList) {
+            if (userCheckRes.getUsername().equals(username)) {
+                return -1;
+            }
+        }
+
+        return 1;
+    }
 
     public int 회원가입(JoinReqDto joinReqDto) {
         // username 체크 해야 함 (이렇게 layer 분리하는 이유는 책임을 나누어 디버깅에 간편)

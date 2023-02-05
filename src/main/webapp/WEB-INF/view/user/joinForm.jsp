@@ -12,7 +12,7 @@
                                 <input id="username" type="text" name="username" class="form-control"
                                     placeholder="Enter username" size="30">
                             </div>
-                            <button type="button" class="badge bg-secondary ms-2">중복확인</button>
+                            <button type="button" class="badge bg-secondary ms-2" onclick="sameCheck()">중복확인</button>
                         </div>
 
 
@@ -50,8 +50,41 @@
 
 
             <script>
+                let submitCheck = false;
+
+                $("#username").keydown(() => {
+                    if (submitCheck) {
+                        alert("중복체크를 다시 하셔야 합니다");
+                        submitCheck = false;
+                    }
+                })
+
                 function valid() {
-                    // alert("회원가입 유효성 검사");
+                    if (submitCheck) {
+                        return true;
+                    } else {
+                        alert("아이디 중복체크를 해주세요")
+                        return false;
+                    }
+                }
+
+                function sameCheck() {
+                    let username = $("#username").val()
+
+                    $.ajax({
+                        type: "get",
+                        url: "/user/usernameSameCheck?username="+username
+                    }).done((res) => {
+                        if (res.data == true) {
+                            alert(res.msg)
+                            submitCheck=true;
+                        } else {
+                            alert(res.msg)
+                            submitCheck=false;
+                        }
+                    }).fail((err)=>{
+                    
+                    });
                 }
 
                 $("#password, #passwordCheck").keyup(() => {

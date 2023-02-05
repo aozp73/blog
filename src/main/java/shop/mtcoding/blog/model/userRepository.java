@@ -5,12 +5,16 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import shop.mtcoding.blog.dto.user.UserCheckRes;
+
 @Mapper
 public interface UserRepository {
         public int insert(@Param("username") String username, @Param("password") String password,
                         @Param("email") String eamil);
 
         public List<User> findByAll();
+
+        public List<UserCheckRes> findByAllUsername();
 
         public User findByUsername(String username);
 

@@ -17,11 +17,12 @@
                                 id="password" size="40">
                         </div>
                         <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">로그인</button>
+                            <button type="submit" class="btn btn-primary">로그인</button>
                         </div>
                     </form>
 
                 </div>
             </div>
+
 
             <%@ include file="../layout/footer.jsp" %>
