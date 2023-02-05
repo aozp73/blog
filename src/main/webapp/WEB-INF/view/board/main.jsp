@@ -12,6 +12,11 @@
                             <div class="card-body">
                                 <h4 class="card-title my-text-ellipsis">${board.title}</h4>
                                 <a href="/board/${board.id}" class="btn btn-primary">게시글 보기</a>
+                                <div class="my-boardMain-lovelayout">
+                                    <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no"></div>
+
+                                    <div>${board.loveCnt}</div>
+                                </div>
                             </div>
                         </div>
                     </c:forEach>

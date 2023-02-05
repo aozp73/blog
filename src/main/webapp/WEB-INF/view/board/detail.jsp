@@ -8,33 +8,51 @@
                     <button id="btn-delete" class="btn btn-danger" onclick="postDelete()">삭제</button>
                 </div>
 
-                <div class="mb-2">
-                    글 번호 : <span id="id"><i>${board.id} </i></span> 작성자 : <span><i>${board.username} </i></span>
 
-                    <c:choose>
-                        <c:when test="${love.isCheck == null}">
-                            <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
-                            <input id="heart" type="hidden" value="no">
-                        </c:when>
-                        <c:otherwise>
-                            <c:choose>
-                                <c:when test="${love.isCheck}">
-                                    <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="ok"></div>
-                                    <input id="heart" type="hidden" value="ok">
-                                </c:when>
-                                <c:otherwise>
-                                    <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
-                                    <input id="heart" type="hidden" value="no">
-                                </c:otherwise>
-                            </c:choose>
 
-                        </c:otherwise>
-                    </c:choose>
-
+                <div>
+                    <div> 글 번호 : <span id="id"><i>${board.id}</i></span></div>
 
                 </div>
+                <div class="my-boardDetail-topgrid">
 
-                <div id="tes" value="a"></div>
+                    <div>
+                        <div> 작성자 : <span><i>${board.username}</i></span> </div>
+
+                    </div>
+                    <div>
+                        <c:choose>
+                            <c:when test="${love.isCheck == null}">
+                                <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
+                                <input id="heart" type="hidden" value="no">
+                                <i>공감 ${board.loveCnt}</i>
+                            </c:when>
+                            <c:otherwise>
+                                <c:choose>
+                                    <c:when test="${love.isCheck}">
+                                        <div>
+                                            <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor"
+                                                value="ok">
+                                            </div>
+                                            <input id="heart" type="hidden" value="ok">
+                                            <i>공감 ${board.loveCnt}</i>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no">
+                                        </div>
+                                        <input id="heart" type="hidden" value="no">
+                                        <i>공감 ${board.loveCnt}</i>
+                                    </c:otherwise>
+                                </c:choose>
+
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
+                </div>
+                <br>
+
                 <div>
                     <h3>${board.title}</h3>
                 </div>
@@ -113,9 +131,11 @@
                         if (value == "ok") {
                             $("#heartPicture").removeClass("fa-solid");
                             $("#heart").val("no");
+                            location.href = `/board/${board.id}`
                         } else {
                             $("#heartPicture").addClass("fa-solid");
                             $("#heart").val("ok");
+                            location.href = `/board/${board.id}`
                         }
 
                     }
