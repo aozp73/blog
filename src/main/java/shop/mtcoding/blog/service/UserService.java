@@ -20,6 +20,30 @@ public class UserService {
     private final HttpSession session;
     private final UserRepository userRepository;
 
+    public int 유저정보수정(int id, String password, String email) {
+        User user = userRepository.findById(id);
+        if (user == null) {
+            return -1;
+        }
+
+        if (user.getId() != id) {
+            return -1;
+        }
+
+        int res = userRepository.updateById(id, password, email);
+        if (res != 1) {
+            return -1;
+        }
+
+        return 1;
+
+    }
+
+    public User 유저한명(int id) {
+        User user = userRepository.findById(id);
+        return user;
+    }
+
     public int 유저네임중복체크(String username) {
         List<UserCheckRes> usernameList = userRepository.findByAllUsername();
         for (UserCheckRes userCheckRes : usernameList) {

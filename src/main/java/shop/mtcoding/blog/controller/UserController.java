@@ -3,14 +3,21 @@ package shop.mtcoding.blog.controller;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.dto.user.UserReq.JoinReqDto;
+import shop.mtcoding.blog.dto.user.UserUpdateReq;
 import shop.mtcoding.blog.handler.ex.CustomException;
+import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.UserService;
 import shop.mtcoding.blog.util.Script;
 
@@ -92,8 +99,41 @@ public class UserController {
         return "user/loginForm";
     }
 
-    @GetMapping("/user/updateForm")
-    public String update() {
+    @RequestMapping(value = "user/{id}/update", method = { RequestMethod.PUT })
+    @ResponseBody
+    public ResponseDto<?> update(@PathVariable int id, @RequestBody UserUpdateReq user) {
+        User principal = (User) session.getAttribute("principal");
+        if (principal == null) {
+            return new ResponseDto<>(-1, "로그인이 필요합니다", false);
+        }
+
+        if (principal.getId() != id) {
+            return new ResponseDto<>(-1, "권한이 없습니다", true);
+        }
+
+        // userTb update
+        int res = userService.유저정보수정(id, user.getPassword(), user.getEmail());
+        if (res != 1) {
+            return new ResponseDto<>(-1, "정보수정 실패 (고객센터에 문의해주세요)", true);
+        }
+
+        return new ResponseDto<>(1, "회원수정 완료", true);
+    }
+
+    @GetMapping("/user/{id}/updateForm")
+    public String updateForm(@PathVariable int id, Model model) {
+        User principal = (User) session.getAttribute("principal");
+        if (principal == null) {
+            throw new CustomException("로그인이 필요합니다");
+        }
+
+        if (principal.getId() != id) {
+            throw new CustomException("권한이 없습니다");
+        }
+
+        User user = userService.유저한명(principal.getId());
+        model.addAttribute("user", user);
+
         return "/user/updateForm";
     }
 
