@@ -27,13 +27,31 @@
 
                     </div>
                     <ul class="pagination mt-3 d-flex justify-content-center">
-                        <li id="previousToggle" class="page-item disabled"><a id="previous" class="page-link" href="#">Previous</a></li>
+                        <li id="previousToggle" class="page-item disabled"><a id="previous" class="page-link"
+                                href="#">Previous</a></li>
                         <li id="nextToggle" class="page-item"><a id="next" class="page-link" href="#">Next</a></li>
                     </ul>
+
+
+                    <div class="mx-quto input-group justify-content-center">
+                        <div>
+                            <mx-auto>
+                                <input id="boardSearch" name="query" type="text" class="form-control"
+                                    placeholder="검색어 입력" aria-label="search" value="" aria-describedby="button-addon2">
+                            </mx-auto>
+                        </div>
+                        <div>
+                            <button id="button-addon2" class="btn btn-primary" type="submit"
+                                onclick="serachGet()">검색</button>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-<%-- 
-            <div class="my-mainPagePaging-layout page navigation">
+
+
+
+            <%-- <div class="my-mainPagePaging-layout page navigation">
                 <ul class="pagination">
                     <c:if test="${pageMaker.prev}">
                         <li class="paginate_button previous">
@@ -51,174 +69,244 @@
                         </li>
                     </c:if>
                 </ul>
-            </div>
-            <form id='actionForm' action="/board/list" method="get">
-                <input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
-                <input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-            </form> --%>
+                </div>
+                <form id='actionForm' action="/board/list" method="get">
+                    <input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
+                    <input type="hidden" name="amount" value="${pageMaker.cri.amount}">
+                </form> --%>
 
 
 
-            <script>
-                // var actionForm = $('#actionForm');
-                // $('.paginate_button a').on('click', function (e) {
-                //     e.preventDefault();
-                //     actionForm.find('input[name="pageNum"]').val($(this).attr('href'));
-                //     actionForm.submit();
-                // });
-                let check = 1;
-                $("#previous").click(() => {
-                    check--
-                    let endPage = `${pageMaker.endPage}`;
+                <script>
+                    // var actionForm = $('#actionForm');
+                    // $('.paginate_button a').on('click', function (e) {
+                    //     e.preventDefault();
+                    //     actionForm.find('input[name="pageNum"]').val($(this).attr('href'));
+                    //     actionForm.submit();
+                    // });
 
-                    if (check == 1) {
-                        $("#previousToggle").addClass("disabled");
-                    } else if (check > 1){
-                        $("#previousToggle").removeClass("disabled");
+
+                    let searchCheck = false;
+                    let check = 1;
+                    let newCheck = 1;
+                    let searchAndPage = 0;
+                    let remain = 0;
+
+                    function serachGet() {
+                        let search = $("#boardSearch").val();
+
+                        $.ajax({
+                            type: "get",
+                            url: "/board/search/?serachKeyword=" + search,
+                            dataType: "json"
+                        }).done((res) => {
+                            searchCheck = true;
+                            alert("통신성공")
+                            searchAndPage = Math.floor(res.length / 12);
+                            remain = res.length % 12;
+
+                            $("#mainBoardList").empty();
+                            for (let i = 0; i <= 11; i++) {
+                                let title = res[i].title;
+                                let id = res[i].id;
+                                let loveCnt = res[i].loveCnt;
+
+                                let el1 =
+                                    ` <div class="card col-lg-3">
+                                    <img class="card-img-top" style="height: 250px;" src="/images/profile.png"
+                                        alt="Card image">
+                                    <div class="card-body">
+                                        <h4 class="card-title my-text-ellipsis">`
+
+
+                                let el2 = `</h4>
+                                        <a href="/board/`
+
+
+                                let el3 = `" class="btn btn-primary">게시글 보기</a>
+                                        <div class="my-boardMain-lovelayout">
+                                            <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no">
+                                            </div>
+
+                                            <div>`
+
+                                let el4 = `</div>
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                                let result = el1 + title + el2 + id + el3 + loveCnt + el4;
+                                $("#mainBoardList").append(result);
+
+                                // document.querySelector("#tes").innerHTML = loveCnt;
+                            }
+
+
+
+                        }).fail((err) => {
+
+                        });
+
+
                     }
-                    if (check < endPage){
-                        $("#nextToggle").removeClass("disabled");
-                    } else if (check == endPage){
-                        $("#nextToggle").addClass("disabled");
-                    }
 
 
-                    // alert(check);
-                     let  beignCheck = check * 12 - 12;
-                     let  endCheck = check * 12 - 1;
-              
-                    
-                    $.ajax({
-                        type: "get",
-                        url: "/board/paging?begin="+beignCheck+"&end="+endCheck,
-                        dataType: "json"
-                    }).done((res) => {
-                        
-                        $("#mainBoardList").empty();
-                        for (let i = 0; i <= 11; i++){
-                            let title = res[i].title;
-                            let id = res[i].id;
-                            let loveCnt = res[i].loveCnt;
+
+                    $("#previous").click(() => {
+                        if (searchCheck == false) {
+                            check--
+                            let endPage = `${pageMaker.endPage}`;
+
+                            if (check == 1) {
+                                $("#previousToggle").addClass("disabled");
+                            } else if (check > 1) {
+                                $("#previousToggle").removeClass("disabled");
+                            }
+                            if (check < endPage) {
+                                $("#nextToggle").removeClass("disabled");
+                            } else if (check == endPage) {
+                                $("#nextToggle").addClass("disabled");
+                            }
+
+                            if (searchCheck == false) {
+
+                            }
+
+                            let beignCheck = check * 12 - 12;
+                            let endCheck = check * 12 - 1;
 
 
-                        let el1 =                         
-                           ` <div class="card col-lg-3">
+                            $.ajax({
+                                type: "get",
+                                url: "/board/paging?begin=" + beignCheck + "&end=" + endCheck,
+                                dataType: "json"
+                            }).done((res) => {
+
+                                $("#mainBoardList").empty();
+                                for (let i = 0; i <= 11; i++) {
+                                    let title = res[i].title;
+                                    let id = res[i].id;
+                                    let loveCnt = res[i].loveCnt;
+
+
+                                    let el1 =
+                                        ` <div class="card col-lg-3">
                                 <img class="card-img-top" style="height: 250px;" src="/images/profile.png"
                                     alt="Card image">
                                 <div class="card-body">
                                     <h4 class="card-title my-text-ellipsis">`
-                                   
-                        
-                        let el2 = `</h4>
+
+
+                                    let el2 = `</h4>
                                     <a href="/board/`
-                                    
-                                    
-                        let el3 =`" class="btn btn-primary">게시글 보기</a>
+
+
+                                    let el3 = `" class="btn btn-primary">게시글 보기</a>
                                     <div class="my-boardMain-lovelayout">
                                         <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no">
                                         </div>
-
+    
                                         <div>`
-                                        
-                        let el4 = `</div>
+
+                                    let el4 = `</div>
                                     </div>
                                 </div>
                             </div>`;
-                        
-                        let result = el1 + title + el2 + id + el3 + loveCnt + el4;
-                        console.log(result);
-                        $("#mainBoardList").append(result);
 
-                        // document.querySelector("#tes").innerHTML = loveCnt;
+                                    let result = el1 + title + el2 + id + el3 + loveCnt + el4;
+                                    console.log(result);
+                                    $("#mainBoardList").append(result);
+
+                                    // document.querySelector("#tes").innerHTML = loveCnt;
+                                }
+
+
+
+                            }).fail((err) => {
+
+                            });
                         }
-                    
-                  
+                    })
 
-                    }).fail((err)=>{
-                        
-                    });
-                })
+                    $("#next").click(() => {
+                        if (searchCheck == false) {
+                            check++
+                            let endPage = `${pageMaker.endPage}`;
 
-                $("#next").click(() => {
-                    check++
-                    let endPage = `${pageMaker.endPage}`;
-        
-                    alert(check);
-                    if (check == 0) {
-                        $("#previousToggle").addClass("disabled");
-                    } else if (check > 1){
-                        $("#previousToggle").removeClass("disabled");
-                    }
-                    if (check < endPage){
-                        $("#nextToggle").removeClass("disabled");
-                    } else if (check == endPage){
-                        $("#nextToggle").addClass("disabled");
-                    }
+                            if (check == 0) {
+                                $("#previousToggle").addClass("disabled");
+                            } else if (check > 1) {
+                                $("#previousToggle").removeClass("disabled");
+                            }
+                            if (check < endPage) {
+                                $("#nextToggle").removeClass("disabled");
+                            } else if (check == endPage) {
+                                $("#nextToggle").addClass("disabled");
+                            }
 
 
-                    // alert(check);
-                     let  beignCheck = check * 12 - 12;
-                     let  endCheck = check * 12 - 1;
-              
-                    
-                    $.ajax({
-                        type: "get",
-                        url: "/board/paging?begin="+beignCheck+"&end="+endCheck,
-                        dataType: "json"
-                    }).done((res) => {
-
-                        $("#mainBoardList").empty();
-                        
-                        if (check == 4) {
-                            alert("aa");
-                        }
-
-                        for (let i = 0; i <= 11; i++){
-                            let title = res[i].title;
-                            let id = res[i].id;
-                            let loveCnt = res[i].loveCnt;
+                            // alert(check);
+                            let beignCheck = check * 12 - 12;
+                            let endCheck = check * 12 - 1;
 
 
-                        let el1 =                         
-                           ` <div class="card col-lg-3">
-                                <img class="card-img-top" style="height: 250px;" src="/images/profile.png"
-                                    alt="Card image">
-                                <div class="card-body">
-                                    <h4 class="card-title my-text-ellipsis">`
-                                   
-                        
-                        let el2 = `</h4>
-                                    <a href="/board/`
-                                    
-                                    
-                        let el3 =`" class="btn btn-primary">게시글 보기</a>
-                                    <div class="my-boardMain-lovelayout">
-                                        <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no">
+                            $.ajax({
+                                type: "get",
+                                url: "/board/paging?begin=" + beignCheck + "&end=" + endCheck,
+                                dataType: "json"
+                            }).done((res) => {
+
+                                $("#mainBoardList").empty();
+
+                                for (let i = 0; i <= 11; i++) {
+                                    let title = res[i].title;
+                                    let id = res[i].id;
+                                    let loveCnt = res[i].loveCnt;
+
+
+                                    let el1 =
+                                        ` <div class="card col-lg-3">
+                                    <img class="card-img-top" style="height: 250px;" src="/images/profile.png"
+                                        alt="Card image">
+                                    <div class="card-body">
+                                        <h4 class="card-title my-text-ellipsis">`
+
+
+                                    let el2 = `</h4>
+                                        <a href="/board/`
+
+
+                                    let el3 = `" class="btn btn-primary">게시글 보기</a>
+                                        <div class="my-boardMain-lovelayout">
+                                            <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no">
+                                            </div>
+    
+                                            <div>`
+
+                                    let el4 = `</div>
                                         </div>
-
-                                        <div>`
-                                        
-                        let el4 = `</div>
                                     </div>
-                                </div>
-                            </div>`;
-                        
-                        let result = el1 + title + el2 + id + el3 + loveCnt + el4;
-                        console.log(result);
-                        $("#mainBoardList").append(result);
+                                </div>`;
 
-                        // document.querySelector("#tes").innerHTML = loveCnt;
+                                    let result = el1 + title + el2 + id + el3 + loveCnt + el4;
+                                    console.log(result);
+                                    $("#mainBoardList").append(result);
+
+                                    // document.querySelector("#tes").innerHTML = loveCnt;
+                                }
+
+
+
+                            }).fail((err) => {
+
+                            });
                         }
-                    
-                  
 
-                    }).fail((err)=>{
-                        
-                    });
-                })
+
+                    })
 
 
 
-            </script>
+                </script>
 
-            <%@ include file="../layout/footer.jsp" %>
+                <%@ include file="../layout/footer.jsp" %>

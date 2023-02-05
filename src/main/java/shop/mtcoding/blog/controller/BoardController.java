@@ -37,11 +37,40 @@ import shop.mtcoding.blog.vo.Criteria;
 @RequiredArgsConstructor
 @Controller
 public class BoardController {
+    Gson gson = new Gson();
+
     private final BoardService boardService;
     private final BoardRepository boardRepository;
     private final ReplyService replyService;
     private final LoveService loveService;
     private final HttpSession session;
+
+    @GetMapping("/board/search")
+    public @ResponseBody String serarching(String serachKeyword) {
+        System.out.println("디버깅" + serachKeyword);
+
+        List<Board> boardSearchlist = boardRepository.findSearchContent(serachKeyword);
+        return gson.toJson(boardSearchlist);
+    }
+
+    @GetMapping("/board/search/paging")
+    public @ResponseBody String searchPaging(int begin, int end, Model model) {
+        Gson gson = new Gson();
+        int cnt = boardService.페이징전체게시물갯수() / 12;
+        int calRemain = boardService.페이징전체게시물갯수() % 12;
+
+        if (begin == cnt * 12) {
+            end = begin + calRemain - 1;
+        }
+        List<Board> boardList = boardRepository.findByAllOrederByLove();
+        List<Board> newList = new ArrayList<>();
+
+        for (int i = begin; i <= end; i++) {
+            newList.add(boardList.get(i));
+        }
+
+        return gson.toJson(newList);
+    }
 
     @GetMapping("/board/paging")
     public @ResponseBody String paging(int begin, int end, Model model) {

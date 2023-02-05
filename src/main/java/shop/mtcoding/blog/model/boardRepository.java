@@ -19,6 +19,8 @@ public interface BoardRepository {
 
         public List<BoardVO> findListPaging(@Param("beginCheck") int beginCheck, @Param("endCheck") int endCheck);
 
+        public List<Board> findSearchContent(String title);
+
         public int getTotalCount();
 
         public List<Board> findByAllOrederByLove();

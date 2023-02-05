@@ -22,6 +22,14 @@
           ]]>
     </select>
 
+    <select id="findSearchContent" resultType="shop.mtcoding.blog.model.Board">
+      <![CDATA[
+        SELECT * FROM BOARD_TB
+        where title like CONCAT('%',#{title},'%')
+        order by love_cnt desc
+      ]]>
+    </select>
+
     <select id="getTotalCount" resultType="int">
       <![CDATA[
         select count(*) from board_tb where id > 0
