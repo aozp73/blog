@@ -55,6 +55,8 @@ public class BoardController {
     @RequestMapping(value = "board/searchPaging", method = { RequestMethod.POST })
     public @ResponseBody String searchPaging(@RequestBody BoardSearchDto boardSearchDto, Model model) {
         Gson gson = new Gson();
+
+        // Service 정리 필요
         List<Board> boardSearchlist = boardRepository.findSearchContent(boardSearchDto.getKeyword());
         int total = boardSearchlist.size();
 
@@ -85,6 +87,8 @@ public class BoardController {
         if (begin == cnt * 12) {
             end = begin + calRemain - 1;
         }
+
+        // Service 정리 필요
         List<Board> boardList = boardRepository.findByAllOrederByLove();
         List<Board> newList = new ArrayList<>();
 
