@@ -89,6 +89,7 @@
                 let newCheck = 1;
                 let searchAndPage = 0;
                 let remain = 0;
+                let search = "";
 
                 function serachGet() {
                     let search = $("#boardSearch").val();
@@ -99,11 +100,35 @@
                         dataType: "json"
 
                     }).done((res) => {
+                        newCheck = 1;
 
                         searchCheck = true;
-
+                        searchKeyword = $("#boardSearch").val();
                         searchAndPage = Math.ceil(res.length / 12);
                         remain = res.length % 12;
+
+                        if (newCheck == 1) {
+                            $("#previousToggle").addClass("disabled");
+                        } else if (newCheck > 1) {
+                            $("#previousToggle").removeClass("disabled");
+                        }
+                        if (newCheck < searchAndPage) {
+                            $("#nextToggle").removeClass("disabled");
+                        } else if (newCheck == searchAndPage) {
+                            $("#nextToggle").addClass("disabled");
+                        }
+
+
+                        if (newCheck == 0) {
+                            $("#previousToggle").addClass("disabled");
+                        } else if (newCheck > 1) {
+                            $("#previousToggle").removeClass("disabled");
+                        }
+                        if (newCheck < searchAndPage) {
+                            $("#nextToggle").removeClass("disabled");
+                        } else if (newCheck == searchAndPage) {
+                            $("#nextToggle").addClass("disabled");
+                        }
 
                         $("#mainBoardList").empty();
                         for (let i = 0; i <= 11; i++) {
@@ -137,7 +162,9 @@
 
 
                 $("#previous").click(() => {
+
                     if (searchCheck == false) {
+
                         check--
                         let endPage = `${pageMaker.endPage}`;
                         if (check == 1) {
@@ -189,7 +216,81 @@
                             }
                         }).fail((err) => {
                         });
+                    
+                } else if (searchCheck == true) {
+                        
+                        newCheck--
+
+                    
+                        if (newCheck == 1) {
+                            $("#previousToggle").addClass("disabled");
+                        } else if (newCheck > 1) {
+                            $("#previousToggle").removeClass("disabled");
+                        }
+                        if (newCheck < searchAndPage) {
+                            $("#nextToggle").removeClass("disabled");
+                        } else if (newCheck == searchAndPage) {
+                            $("#nextToggle").addClass("disabled");
+                        }
+
+      
+                        // alert(check);
+                        let searchBeignCheck = newCheck * 12 - 12;
+                        let searchEndCheck = newCheck * 12 - 1;
+
+
+                        let searchInfo = {
+                            begin: searchBeignCheck,
+                            end: searchEndCheck,
+                            keyword: searchKeyword,
+                         };
+
+                        $.ajax({
+                            type: "post",
+                            url: "/board/searchPaging",
+                            data: JSON.stringify(searchInfo),
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8"
+                            },
+                            dataType: "json"
+                        }).done((res) => {
+                            
+
+                            $("#mainBoardList").empty();
+                            for (let i = 0; i <= 11; i++) {
+                                let title = res[i].title;
+                                let id = res[i].id;
+                                let loveCnt = res[i].loveCnt;
+
+
+                                let el1 =
+                                    ` <div class="card col-lg-3">
+                                    <img class="card-img-top" style="height: 250px;" src="/images/profile.png"
+                                        alt="Card image">
+                                    <div class="card-body">
+                                        <h4 class="card-title my-text-ellipsis">`
+                                let el2 = `</h4>
+                                        <a href="/board/`
+                                let el3 = `" class="btn btn-primary">게시글 보기</a>
+                                        <div class="my-boardMain-lovelayout">
+                                            <div id="heartPicture" class="fa-regular fa-heart fa-xl my-cursor" value="no">
+                                            </div>
+    
+                                            <div>`
+                                let el4 = `</div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                                let result = el1 + title + el2 + id + el3 + loveCnt + el4;
+                                console.log(result);
+                                $("#mainBoardList").append(result);
+                                // document.querySelector("#tes").innerHTML = loveCnt;
+                            }
+                        }).fail((err) => {
+                        });
                     }
+                   
+
                 })
 
 
@@ -241,16 +342,18 @@
                                     </div>
                                 </div>`;
                                 let result = el1 + title + el2 + id + el3 + loveCnt + el4;
-                                console.log(result);
+
+
                                 $("#mainBoardList").append(result);
                                 // document.querySelector("#tes").innerHTML = loveCnt;
                             }
                         }).fail((err) => {
                         });
+
+
                     } else if (searchCheck == true) {
-
+                        
                         newCheck++
-
                         if (newCheck == 0) {
                             $("#previousToggle").addClass("disabled");
                         } else if (newCheck > 1) {
@@ -265,11 +368,23 @@
                         let searchBeignCheck = newCheck * 12 - 12;
                         let searchEndCheck = newCheck * 12 - 1;
 
+
+                        let searchInfo = {
+                            begin: searchBeignCheck,
+                            end: searchEndCheck,
+                            keyword: searchKeyword,
+                         };
+
                         $.ajax({
-                            type: "get",
-                            url: "/board/paging?begin=" + beignCheck + "&end=" + endCheck,
+                            type: "post",
+                            url: "/board/searchPaging",
+                            data: JSON.stringify(searchInfo),
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8"
+                            },
                             dataType: "json"
                         }).done((res) => {
+                            
 
                             $("#mainBoardList").empty();
                             for (let i = 0; i <= 11; i++) {
@@ -304,7 +419,7 @@
                         }).fail((err) => {
                         });
                     }
-                    // 작업 중
+                   
 
                 })
             </script>

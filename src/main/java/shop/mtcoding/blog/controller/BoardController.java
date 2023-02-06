@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardDto;
+import shop.mtcoding.blog.dto.board.BoardSearchDto;
 import shop.mtcoding.blog.dto.board.PageDto;
 import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.dto.love.LoveDto;
@@ -51,20 +52,25 @@ public class BoardController {
         return gson.toJson(boardSearchlist);
     }
 
-    @GetMapping("/board/search/paging")
-    public @ResponseBody String searchPaging(int begin, int end, Model model) {
+    @RequestMapping(value = "board/searchPaging", method = { RequestMethod.POST })
+    public @ResponseBody String searchPaging(@RequestBody BoardSearchDto boardSearchDto, Model model) {
         Gson gson = new Gson();
-        int cnt = boardService.페이징전체게시물갯수() / 12;
-        int calRemain = boardService.페이징전체게시물갯수() % 12;
+        List<Board> boardSearchlist = boardRepository.findSearchContent(boardSearchDto.getKeyword());
+        int total = boardSearchlist.size();
+
+        int begin = boardSearchDto.getBegin();
+        int end = boardSearchDto.getEnd();
+        int cnt = total / 12;
+        int calRemain = total % 12;
 
         if (begin == cnt * 12) {
             end = begin + calRemain - 1;
         }
-        List<Board> boardList = boardRepository.findByAllOrederByLove();
+
         List<Board> newList = new ArrayList<>();
 
         for (int i = begin; i <= end; i++) {
-            newList.add(boardList.get(i));
+            newList.add(boardSearchlist.get(i));
         }
 
         return gson.toJson(newList);
