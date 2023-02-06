@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.ResponseDto;
 import shop.mtcoding.blog.dto.user.UserReq.JoinReqDto;
+import shop.mtcoding.blog.dto.user.UserReq.LoginReqDto;
 import shop.mtcoding.blog.dto.user.UserUpdateReq;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.UserService;
-import shop.mtcoding.blog.util.Script;
 
 @RequiredArgsConstructor
 @Controller
@@ -69,24 +69,36 @@ public class UserController {
             throw new CustomException("email을 작성해주세요");
         }
 
-        int res = userService.회원가입(joinReqDto);
+        userService.회원가입(joinReqDto);
         // return "redirect:/loginForm";
-        if (res != 1) {
-            throw new CustomException("회원가입 실패");
-            // return Script.back("회원정보를 다시 확인 해주세요.");
-        }
+
         return "redirect:/loginForm";
     }
 
     @PostMapping("/login")
-    @ResponseBody
-    public String login(String username, String password) {
-        int res = userService.로그인(username, password);
-        if (res != 1) {
-            return Script.back("아이디와 비밀번호를 다시 확인해주세요");
+    // @ResponseBody
+    public String login(LoginReqDto loginReqDto) {
+
+        if (loginReqDto.getUsername() == null || loginReqDto.getUsername().isEmpty()) {
+            throw new CustomException("username을 작성해주세요");
+        }
+        if (loginReqDto.getPassword() == null || loginReqDto.getPassword().isEmpty()) {
+            throw new CustomException("password를 작성해주세요");
         }
 
-        return Script.href("/");
+        User principal = userService.로그인(loginReqDto);
+
+        session.setAttribute("principal", principal);
+
+        return "redirect:/";
+
+        // int res = userService.로그인(loginReqDto.getUsername(),
+        // loginReqDto.getPassword());
+        // if (res != 1) {
+        // return Script.back("아이디와 비밀번호를 다시 확인해주세요");
+        // }
+
+        // return Script.href("/");
     }
 
     @GetMapping("/joinForm")

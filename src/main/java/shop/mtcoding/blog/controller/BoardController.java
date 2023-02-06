@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,6 @@ import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
 import shop.mtcoding.blog.service.LoveService;
 import shop.mtcoding.blog.service.ReplyService;
-import shop.mtcoding.blog.vo.BoardVO;
 import shop.mtcoding.blog.vo.Criteria;
 
 @RequiredArgsConstructor
@@ -47,8 +47,6 @@ public class BoardController {
 
     @GetMapping("/board/search")
     public @ResponseBody String serarching(String serachKeyword) {
-        System.out.println("디버깅" + serachKeyword);
-
         List<Board> boardSearchlist = boardRepository.findSearchContent(serachKeyword);
         return gson.toJson(boardSearchlist);
     }
@@ -134,13 +132,18 @@ public class BoardController {
     public String insert(BoardDto boardDto) {
         User user = (User) session.getAttribute("principal");
         if (user == null) {
-            throw new CustomException("로그인이 필요합니다");
+            throw new CustomException("로그인이 필요합니다", HttpStatus.UNAUTHORIZED);
         }
 
-        int res1 = boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
-        if (res1 != 1) {
-            throw new CustomException("게시글 등록 실패");
+        if (boardDto.getTitle() == null || boardDto.getContent().isEmpty()) {
+            throw new CustomException("username을 작성해주세요");
         }
+
+        if (boardDto.getTitle() == null || boardDto.getContent().isEmpty()) {
+            throw new CustomException("password를 작성해주세요");
+        }
+
+        boardService.게시글등록(user.getId(), boardDto.getTitle(), boardDto.getContent());
 
         return "redirect:/";
     }

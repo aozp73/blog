@@ -9,11 +9,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.love.LoveDto;
+import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.User;
-import shop.mtcoding.blog.vo.BoardVO;
-import shop.mtcoding.blog.vo.Criteria;
 
 @RequiredArgsConstructor
 @Service
@@ -46,7 +45,7 @@ public class BoardService {
         content = content.replaceAll("</p>", "");
         int res = boardRepository.insert(userId, title, content, 0);
         if (res != 1) {
-            return -1;
+            throw new CustomException("게시글 등록 실패");
         }
         return 1;
     }

@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import shop.mtcoding.blog.dto.board.BoardDetailDto;
 import shop.mtcoding.blog.dto.board.BoardRecentDto;
 import shop.mtcoding.blog.vo.BoardVO;
-import shop.mtcoding.blog.vo.Criteria;
 
 @Mapper
 public interface BoardRepository {
