@@ -12,7 +12,9 @@ import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
 import shop.mtcoding.blog.dto.board.ResponseDto;
+import shop.mtcoding.blog.dto.love.LoveAjaxDto;
 import shop.mtcoding.blog.dto.love.LoveDto;
+import shop.mtcoding.blog.model.BoardRepository;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
 import shop.mtcoding.blog.service.LoveService;
@@ -23,6 +25,7 @@ public class LoveController {
     private final HttpSession session;
     private final LoveService loveService;
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     @RequestMapping(value = "love/{boardId}/insert", method = { RequestMethod.POST })
     @ResponseBody
@@ -51,6 +54,9 @@ public class LoveController {
         if (res2 != 1) {
             return gson.toJson(new ResponseDto<>(-1, "boardtable 좋아요세팅 실패", false));
         }
-        return gson.toJson(loveDto);
+
+        // 아래 정리 필요
+        LoveAjaxDto Dto = new LoveAjaxDto(boardRepository.findById(boardId).getLoveCnt(), loveDto.getIsCheck());
+        return gson.toJson(Dto);
     }
 }

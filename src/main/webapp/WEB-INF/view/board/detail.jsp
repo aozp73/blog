@@ -20,18 +20,21 @@
                         <div> 작성자 : <span><i>${board.username}</i></span> </div>
 
                     </div>
-                    <div>
+                    <div id="heartBox">
                         <c:choose>
+
                             <c:when test="${love.isCheck == null}">
                                 <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
                                 <input id="heart" type="hidden" value="no">
                                 <i>공감 ${board.loveCnt}</i>
                             </c:when>
+
                             <c:otherwise>
+
                                 <c:choose>
                                     <c:when test="${love.isCheck}">
                                         <div>
-                                            <div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor"
+                                            <div id="heartPicture" class="fa-solid fa-regular fa-heart my-xl my-cursor"
                                                 value="ok">
                                             </div>
                                             <input id="heart" type="hidden" value="ok">
@@ -47,6 +50,7 @@
                                 </c:choose>
 
                             </c:otherwise>
+
                         </c:choose>
                     </div>
 
@@ -120,23 +124,55 @@
                             },
                             dataType: "json"
                         }).done((res) => {
-                            console.log(res.code)
-                            console.log(res.isCheck)
+                            cnt = res.cnt;
+                            isCheck = res.isCheck;
+                        let value = $("#heart").val();
+                        if (value == "ok") {
+
+                            $("#heartBox").empty();
+
+                            let el = 
+                                `<div id="heartPicture" class="fa-regular fa-heart my-xl my-cursor" value="no"></div>
+                                <input id="heart" type="hidden" value="no">
+                                <i>공감` +isCheck+`</i>`
+
+                            $("#heartBox").append();
+
+
+
+                            // $("#heartPicture").removeClass("fa-solid");
+                            $("#heart").val("no");
+
+
+                            // location.href = `/board/${board.id}`
+                        } else {
+
+                             $("#heartBox").empty();
+
+                            let el = 
+                                `<div id="heartPicture" class="fa-solid fa-regular fa-heart my-xl my-cursor" value="no"></div>
+                                <input id="heart" type="hidden" value="ok">
+                                <i>공감` +isCheck+`</i>`
+
+                            $("#heartBox").append();
+                            // $("#heartPicture").removeClass("fa-solid");
+                            // $("#heartPicture").addClass("fa-solid");
+                        }
+
+
+
+
+
+
+
+                            location.href = `/board/${board.id}`
                         }).fail((err) => {
+                            alert("LoveController 진행실패");
                             console.log(err.code)
                             console.log(err.isCheck)
                         });
 
-                        let value = $("#heart").val();
-                        if (value == "ok") {
-                            $("#heartPicture").removeClass("fa-solid");
-                            $("#heart").val("no");
-                            location.href = `/board/${board.id}`
-                        } else {
-                            $("#heartPicture").addClass("fa-solid");
-                            $("#heart").val("ok");
-                            location.href = `/board/${board.id}`
-                        }
+
 
                     }
                 });
@@ -252,7 +288,7 @@
                 }/* 댓글 Post */
 
 
-                printLove()
+                // printLove()
             </script>
 
             <%@ include file="../layout/footer.jsp" %>

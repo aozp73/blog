@@ -20,7 +20,7 @@ create table love_tb(
     board_id int not null,
     board_user_id int not null,
     acted_user_id int not null,
-    is_check boolean,
+    is_check boolean default false,
     created_at timestamp
 );
 

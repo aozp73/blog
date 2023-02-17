@@ -22,7 +22,7 @@ public class LoveService {
             return new LoveDto(1, null);
         }
 
-        if (love.getIsCheck() == true) {
+        if (love.isCheck() == true) {
             return new LoveDto(1, true);
         } else {
             return new LoveDto(0, false);
@@ -35,7 +35,7 @@ public class LoveService {
 
         // 최초 좋아요한 적이 없다면 테이블 생성
         if (love == null) {
-            int res = loverepository.insert(boardId, board.getUserId(), principalId, false);
+            int res = loverepository.insert(boardId, board.getUserId(), principalId);
             if (res != 1) {
                 return -1;
             }
@@ -46,7 +46,7 @@ public class LoveService {
 
     public LoveDto 좋아요isCheck세팅(int boardId, int principalId) {
         Love love = loverepository.findByBoardIdAndActedUserId(boardId, principalId);
-        boolean isCheck = love.getIsCheck();
+        boolean isCheck = love.isCheck();
 
         if (isCheck == false) {
             // 기존 false면 true로 update
@@ -56,7 +56,7 @@ public class LoveService {
             }
             return new LoveDto(1, true);
         } else {
-            // 기존 false면 ture로 update
+            // 기존 true면 false로 update
             int res2 = loverepository.updateById(love.getId(), false);
             if (res2 != 1) {
                 return new LoveDto(-1, false);

@@ -5,8 +5,8 @@
 
 <mapper namespace="shop.mtcoding.blog.model.LoveRepository">
     <insert id="insert">
-      insert into love_tb(board_id, board_user_id, acted_user_id, is_check, created_at)
-                   values(#{boardId},#{boardUserId},#{actedUserId},#{isCheck},now())
+      insert into love_tb(board_id, board_user_id, acted_user_id, created_at)
+                   values(#{boardId},#{boardUserId},#{actedUserId},now())
     </insert>
 
     <select id="findByAll" resultType="shop.mtcoding.blog.model.Love">

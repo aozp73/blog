@@ -44,8 +44,6 @@ insert into board_tb(user_id, title, content, love_cnt, created_at) values(1, '�
 insert into reply_tb(board_id, user_id, username, content, created_at) values(1, 1, '더미_username_ssar', '더미_content', now());
 insert into reply_tb(board_id, user_id, username, content, created_at) values(2, 2, '더미_username_cos', '더미_content', now());
 
-insert into love_tb(board_id, board_user_id, acted_user_id, is_check, created_at) values(1, 1, 1, false, now());
-insert into love_tb(board_id, board_user_id, acted_user_id, is_check, created_at) values(2, 2, 1, false, now());
 
 commit;
 

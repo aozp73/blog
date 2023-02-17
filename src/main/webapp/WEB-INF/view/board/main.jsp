@@ -50,7 +50,7 @@
             </div>
 
 
-
+<%-- 
             <div class="my-mainPagePaging-layout page navigation">
                 <ul class="pagination">
                     <c:if test="${pageMaker.prev}">
@@ -58,6 +58,7 @@
                             <a class="page-link" href="#">Prev</a>
                         </li>
                     </c:if>
+                    <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
                     <c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
                         <li class="paginate_button">
                             <a class="page-link" href="#">${num}</a>
@@ -73,7 +74,7 @@
             <form id='actionForm' action="/board/list" method="get">
                 <input type="hidden" name="pageNum" value="${pageMaker.cri.pageNum}">
                 <input type="hidden" name="amount" value="${pageMaker.cri.amount}">
-            </form>
+            </form> --%>
 
 
 

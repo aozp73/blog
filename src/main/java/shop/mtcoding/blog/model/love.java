@@ -12,6 +12,6 @@ public class Love {
     private int boardId;
     private int boardUserId;
     private int actedUserId;
-    private Boolean isCheck;
+    private boolean isCheck;
     private Timestamp createdAt;
 }
