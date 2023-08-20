@@ -4,9 +4,8 @@
   <img width="60%" src="https://github.com/aozp73/aozp73/assets/122352251/6b8fc143-76d7-4816-99d7-c85ba75eb525"/>
 </div>
 &nbsp; ① 해당 프로젝트는 2주간 진행하는 Blog 강의 첫날(금요일) 전체 Topic에 대해 듣고, </br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 강의를 듣기전 혼자 완성해보고 싶다는 욕심에 3일간(주말) 진행한 프로젝트임 </br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 학원에서 해당 주제의 강의 듣기전 혼자 완성해보고 싶다는 욕심에 3일간(주말) 진행한 프로젝트 </br>
 &nbsp; ② Server, Front 혼자 병행 </br></br>
-&nbsp;&nbsp;📝 Git Repository&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp; https://github.com/aozp73/blog </br>
 &nbsp;&nbsp;📝 Blog 후기 정리글 :&nbsp;&nbsp; https://blog.naver.com/aozp73/223007266499
 </br></br>
 
