@@ -110,13 +110,6 @@
 ## 모델링
 <div align="center">
     <img width="80%" src="https://github.com/aozp73/aozp73/assets/122352251/75e376c2-8b16-4507-971b-bed66915cf39"/>
+</div>
+
 </br></br>
-  
-### 1단계 (완료)
-- User
-- Board
-### 2단계 (완료)
-- Reply
-### 3단계 (완료)
-- Love
-</br>
